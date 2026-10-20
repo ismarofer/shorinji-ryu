@@ -1,11 +1,18 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Katas en trazos</title>
+<title>Shorinji-Ryu</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#b9412c">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Shorinji-Ryu">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: índice lateral fijo (tomos → capítulos y katas) + vista central (portada, kata con reproductor y cuadrícula, o capítulo de texto) */
+/* Layout: cabecera con menú (Karate · Kihon · Kata) que en pantallas estrechas pasa a un cajón lateral izquierdo + vista central (portada, kata con reproductor y cuadrícula, o capítulo de texto) */
 :root{
   --paper:#f2f3f5; --sheet:#ffffff; --ink:#1b2130; --muted:#5d6577; --line:#d9dce3;
   --accent:#b9412c; --link:#2e4ea3; --plate:#ffffff;
@@ -31,6 +38,7 @@ body{padding:0}
 .top{position:sticky;top:0;z-index:50;background:var(--sheet);border-bottom:1px solid var(--line)}
 .bar{max-width:1160px;margin:0 auto;display:flex;align-items:center;gap:6px;padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));min-height:56px}
 .brand{font-family:var(--f-display);font-weight:800;font-size:19px;color:var(--ink);text-decoration:none;margin-right:14px;white-space:nowrap}
+.bar>#burger{margin-left:-8px}
 .primary{display:flex;gap:2px}
 .mi{font:inherit;font-size:14px;font-weight:700;background:none;border:0;border-bottom:3px solid transparent;color:var(--ink);padding:8px 12px;cursor:pointer;border-radius:6px 6px 0 0;display:flex;align-items:center;gap:6px}
 .mi:hover{background:var(--paper)}
@@ -44,7 +52,10 @@ body{padding:0}
 .searchbox svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
 .icon{font:inherit;background:none;border:1px solid transparent;border-radius:8px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer}
 .icon:hover{background:var(--paper);border-color:var(--line)}
-#sbtn{display:none}
+#sbtn,#burger{display:none}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 28px}
+.cols .links{grid-template-columns:1fr}
+.cols h4{margin-top:6px}
 .panel{position:absolute;left:0;right:0;top:100%;background:var(--sheet);border-bottom:1px solid var(--line);box-shadow:0 14px 30px rgba(10,14,25,.12);max-height:min(72vh,640px);overflow:auto}
 .panel[hidden]{display:none}
 .pin{max-width:1160px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 22px max(16px,env(safe-area-inset-left,0px))}
@@ -67,7 +78,7 @@ mark{background:color-mix(in srgb,var(--accent) 26%,transparent);color:inherit;b
 .empty{color:var(--muted);padding:6px 4px}
 .scrim{position:fixed;inset:0;background:rgba(8,10,16,.45);z-index:60}
 .scrim[hidden],.drawer[hidden]{display:none}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(400px,92vw);background:var(--sheet);border-left:1px solid var(--line);z-index:70;overflow:auto;padding:14px 18px 30px;box-shadow:-18px 0 40px rgba(10,14,25,.2)}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(400px,92vw);background:var(--sheet);border-right:1px solid var(--line);z-index:70;overflow:auto;padding:14px 18px 30px;box-shadow:18px 0 40px rgba(10,14,25,.2)}
 .drawer .dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .drawer .dh b{font-family:var(--f-display);font-size:18px}
 .drawer ul{list-style:none;margin:0;padding:0}
@@ -80,18 +91,18 @@ mark{background:color-mix(in srgb,var(--accent) 26%,transparent);color:inherit;b
 .drawer summary .c{margin-left:auto;margin-right:10px}
 .drawer summary::after{content:"▾";color:var(--muted);font-size:11px}
 .drawer details[open] summary::after{content:"▴"}
+.drawer details details{border-top:0;margin-left:10px}
+.drawer details details summary{font-weight:500}
 .drawer .c{font-family:var(--f-mono);font-size:11px;color:var(--muted);align-self:center}
 @media (max-width:880px){
-  .bar{flex-wrap:wrap;row-gap:0;padding-bottom:0}
+  .bar{flex-wrap:wrap;row-gap:0}
   .brand{margin-right:auto;font-size:18px}
   .searchbox{display:none;order:5;width:100%;padding:6px 0 10px}
   .searchbox:focus-within{width:100%}
   .searchbox svg{left:11px;top:calc(50% - 2px)}
   .top.searching .searchbox{display:block}
-  .top.searching .primary{display:none}
-  #sbtn{display:inline-flex}
-  .primary{order:4;width:100%;justify-content:space-between}
-  .mi{flex:1;justify-content:center;padding:10px 6px}
+  #sbtn,#burger{display:inline-flex}
+  .primary{display:none}
   .spacer{display:none}
 }
 @keyframes flash{0%,60%{background:color-mix(in srgb,var(--accent) 22%,transparent)}100%{background:transparent}}
@@ -101,6 +112,15 @@ mark{background:color-mix(in srgb,var(--accent) 26%,transparent);color:inherit;b
 /* ramas en portada */
 .branch{margin:34px 0 0}
 .branch h2{margin:0 0 2px}
+.hero{max-width:640px;margin:10vh auto 0;text-align:center}
+.hero h1{margin-bottom:22px}
+.hero .searchbox{display:block;width:100%;padding:0;text-align:left}
+.hero .searchbox:focus-within{width:100%}
+.hero .searchbox input{font-size:17px;padding:14px 18px 14px 44px;background:var(--sheet)}
+.hero .searchbox svg{left:16px;top:50%}
+.hero .res{margin-top:10px;text-align:left}
+.hero .pin{padding:6px 0 0}
+body.home .top .searchbox,body.home #sbtn{display:none!important}
 .cardsbar{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 18px}
 .tile{flex:1 1 220px;background:var(--sheet);border:1px solid var(--line);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--ink)}
 .tile:hover{border-color:var(--muted)}
@@ -191,11 +211,12 @@ figure.chart img{max-width:100%;height:auto;display:block;margin:0 auto}
 
 <header class="top" id="top">
   <div class="bar">
-    <a class="brand" href="#inicio">Katas en trazos</a>
-    <nav class="primary" aria-label="Katas por rama">
-      <button class="mi" data-menu="shorin" aria-expanded="false" aria-controls="dd">Shorin <span class="car">▾</span></button>
-      <button class="mi" data-menu="tomari" aria-expanded="false" aria-controls="dd">Tomari-te <span class="car">▾</span></button>
-      <button class="mi" data-menu="naha" aria-expanded="false" aria-controls="dd">Naha-te <span class="car">▾</span></button>
+    <button class="icon" id="burger" aria-label="Menú" aria-expanded="false" aria-controls="drawer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <a class="brand" href="#inicio">Shorinji-Ryu</a>
+    <nav class="primary" aria-label="Menú principal">
+      <button class="mi" data-menu="karate" aria-expanded="false" aria-controls="dd">Karate <span class="car">▾</span></button>
+      <button class="mi" data-menu="kihon" aria-expanded="false" aria-controls="dd">Kihon <span class="car">▾</span></button>
+      <button class="mi" data-menu="kata" aria-expanded="false" aria-controls="dd">Kata <span class="car">▾</span></button>
     </nav>
     <span class="spacer"></span>
     <div class="searchbox" role="search">
@@ -203,7 +224,6 @@ figure.chart img{max-width:100%;height:auto;display:block;margin:0 auto}
       <input id="q" type="search" placeholder="Buscar kata, técnica, término…" aria-label="Buscar" autocomplete="off" spellcheck="false">
     </div>
     <button class="icon" id="sbtn" aria-label="Buscar" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
-    <button class="icon" id="burger" aria-label="Menú" aria-expanded="false" aria-controls="drawer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   </div>
   <div class="panel" id="dd" hidden></div>
   <div class="panel res" id="results" hidden aria-live="polite"></div>
@@ -218,7 +238,6 @@ figure.chart img{max-width:100%;height:auto;display:block;margin:0 auto}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 let IDX=null, cache={}, cur=0, timer=null, front='imgA', S=[], KATA=null, MODE='kata';
-const TOMO={'2':'Tomo II','3':'Tomo III','4':'Tomo IV'};
 
 async function getJSON(name){
   if(cache[name])return cache[name];
@@ -248,34 +267,39 @@ function closeAll(){
   document.querySelectorAll('.mi').forEach(b=>b.setAttribute('aria-expanded','false'));
   closeDrawer();
 }
+const BRS=['shorin','tomari','naha'];
+const chLi=(l,hc)=>l.map(c=>`<li><a href="#t-${c.id}"${hc===c.id?' aria-current="page"':''}>${esc(c.title)}</a></li>`).join('');
+const kaLi=(b,hk)=>inBranch(b).map(k=>`<li><a href="#k-${k.slug}"${hk===k.slug?' aria-current="page"':''}>${esc(k.name)}<span class="c">${k.n}</span></a></li>`).join('');
 function markNav(){
-  const hk=hereKata(), k=hk&&IDX.katas.find(x=>x.slug===hk);
-  document.querySelectorAll('.mi').forEach(b=>b.classList.toggle('here',!!k&&k.branch===b.dataset.menu));
+  const hk=hereKata(), hc=hereCh();
+  const sec=hk?'kata':hc?(KIHON().some(c=>c.id===hc)?'kihon':'karate'):null;
+  document.querySelectorAll('.mi').forEach(b=>b.classList.toggle('here',b.dataset.menu===sec));
 }
 function showMenu(id){
   if(openMenu===id){closeAll();return}
   closeAll(); openMenu=id;
-  const hk=hereKata(), b=BR[id];
-  const items=inBranch(id);
-  $('dd').innerHTML=`<div class="pin"><h3>${b.name}</h3><p class="d">${b.d} <span style="white-space:nowrap">${items.length} katas</span></p>
-   <ul class="links">${items.map(k=>`<li><a href="#k-${k.slug}"${hk===k.slug?' aria-current="page"':''}>${esc(k.name)}<span class="c">${k.n}</span></a></li>`).join('')}</ul></div>`;
-  $('dd').hidden=false;
+  const hk=hereKata(), hc=hereCh();
+  let h;
+  if(id==='karate')h=`<div class="pin"><h3>Karate</h3><p class="d">Qué es el karate, su espíritu y su teoría, junto con el vocabulario y los materiales de referencia.</p>
+    <div class="cols"><div><h4>Teoría y espíritu</h4><ul class="links">${chLi(TEO(),hc)}</ul></div><div><h4>Vocabulario y referencia</h4><ul class="links">${chLi(REF(),hc)}</ul></div></div></div>`;
+  else if(id==='kihon')h=`<div class="pin"><h3>Kihon</h3><p class="d">Técnica básica: saludo, posiciones, defensas, ataques y kumite básico.</p><ul class="links">${chLi(KIHON(),hc)}</ul></div>`;
+  else h=`<div class="pin"><h3>Kata</h3><p class="d">${IDX.katas.length} katas agrupados por escuela.</p>
+    <div class="cols">${BRS.map(b=>`<div><h4>${BR[b].name} · ${inBranch(b).length}</h4><ul class="links">${kaLi(b,hk)}</ul></div>`).join('')}</div></div>`;
+  $('dd').innerHTML=h; $('dd').hidden=false;
   document.querySelector(`.mi[data-menu="${id}"]`).setAttribute('aria-expanded','true');
 }
 document.querySelectorAll('.mi').forEach(b=>b.onclick=e=>{e.stopPropagation();showMenu(b.dataset.menu)});
 function drawerHTML(){
   const hk=hereKata(), hc=hereCh();
-  const ch=l=>`<ul>${l.map(c=>`<li><a href="#t-${c.id}"${hc===c.id?' aria-current="page"':''}>${esc(c.title)}</a></li>`).join('')}</ul>`;
-  const kt=b=>`<ul>${inBranch(b).map(k=>`<li><a href="#k-${k.slug}"${hk===k.slug?' aria-current="page"':''}>${esc(k.name)}<span class="c">${k.n}</span></a></li>`).join('')}</ul>`;
+  const ul=x=>`<ul>${x}</ul>`;
   const od=(open,t,body)=>`<details${open?' open':''}><summary>${t}</summary>${body}</details>`;
   const hkk=hk&&IDX.katas.find(x=>x.slug===hk);
-  return `<div class="dh"><b>Menú</b><button class="icon" id="dclose" aria-label="Cerrar menú"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  const inL=l=>!!hc&&l.some(c=>c.id===hc);
+  return `<div class="dh"><b>Shorinji-Ryu</b><button class="icon" id="dclose" aria-label="Cerrar menú"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
    <ul><li><a href="#inicio"${cur_()==='inicio'||!cur_()?' aria-current="page"':''}>Inicio</a></li></ul>
-   ${od(!!hc&&KIHON().some(c=>c.id===hc),'Kihon · técnica básica',ch(KIHON()))}
-   ${od(!!hc&&REF().some(c=>c.id===hc),'Vocabulario y referencia',ch(REF()))}
-   ${od(!!hc&&TEO().some(c=>c.id===hc),'Teoría y espíritu del karate',ch(TEO()))}
-   <h4>Todos los katas</h4>
-   ${['shorin','tomari','naha'].map(b=>od(hkk&&hkk.branch===b,`${BR[b].name} <span class="c">${inBranch(b).length}</span>`,kt(b))).join('')}`;
+   ${od(inL(TEO())||inL(REF()),'Karate',`<h4>Teoría y espíritu</h4>${ul(chLi(TEO(),hc))}<h4>Vocabulario y referencia</h4>${ul(chLi(REF(),hc))}`)}
+   ${od(inL(KIHON()),'Kihon',ul(chLi(KIHON(),hc)))}
+   ${od(!!hkk,'Kata',BRS.map(b=>od(hkk&&hkk.branch===b,`${BR[b].name} <span class="c">${inBranch(b).length}</span>`,ul(kaLi(b,hk)))).join(''))}`;
 }
 function openDrawer(){
   closeAll(); $('drawer').innerHTML=drawerHTML(); $('drawer').hidden=false; $('scrim').hidden=false;
@@ -287,12 +311,12 @@ $('scrim').onclick=closeDrawer;
 $('drawer').addEventListener('click',e=>{if(e.target.closest('a'))closeDrawer()});
 $('dd').addEventListener('click',e=>{if(e.target.closest('a'))closeAll()});
 document.addEventListener('click',e=>{if(!e.target.closest('.top')&&!e.target.closest('.drawer'))closeAll()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){const was=!$('results').hidden||openMenu||!$('drawer').hidden;closeAll();if(was)$('q').blur()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const was=!$('results').hidden||openMenu||!$('drawer').hidden;closeAll();if(was)document.activeElement.blur()}});
 $('sbtn').onclick=e=>{e.stopPropagation();const t=$('top');t.classList.toggle('searching');const on=t.classList.contains('searching');$('sbtn').setAttribute('aria-expanded',String(on));if(on)$('q').focus();else{$('results').hidden=true}};
 
 /* ---------- buscador ---------- */
 let SEARCH=null, sloading=null;
-function loadSearch(){ if(SEARCH||sloading)return sloading; return sloading=getJSON('search').then(d=>{SEARCH=d;SEARCH.nk=d.k.map(r=>norm(r[3]));SEARCH.nc=d.c.map(r=>norm(r[1]));if($('q').value.trim())runSearch()}).catch(()=>{}) }
+function loadSearch(){ if(SEARCH||sloading)return sloading; return sloading=getJSON('search').then(d=>{SEARCH=d;SEARCH.nk=d.k.map(r=>norm(r[3]));SEARCH.nc=d.c.map(r=>norm(r[1]));if(QI().value.trim())runSearch()}).catch(()=>{}) }
 function hl(orig,toks){
   let nm='',map=[];
   for(let i=0;i<orig.length;i++){const n=orig[i].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();for(const c of n){nm+=c;map.push(i)}}
@@ -307,9 +331,12 @@ function snippet(t,toks,w=150){
   if(t.length<=w)return t;
   const a=Math.max(0,p-40); return (a>0?'…':'')+t.slice(a,a+w)+(a+w<t.length?'…':'');
 }
+const isHome=()=>document.body.classList.contains('home');
+const QI=()=>isHome()?$('hq'):$('q');
+const RES=()=>isHome()?$('hres'):$('results');
 function runSearch(){
-  const raw=$('q').value.trim();
-  if(raw.length<2){$('results').hidden=true;return}
+  const raw=QI().value.trim();
+  if(raw.length<2){RES().hidden=true;return}
   const toks=norm(raw).split(/\s+/).filter(Boolean);
   const all=s=>toks.every(t=>s.includes(t));
   closeDrawer(); if(openMenu){openMenu=null;$('dd').hidden=true;document.querySelectorAll('.mi').forEach(b=>b.setAttribute('aria-expanded','false'))}
@@ -330,38 +357,32 @@ function runSearch(){
     if(mv.length)h+=`<div class="res-sec"><h4>Movimientos${total>mv.length?` (${mv.length} de ${total})`:''}</h4>${mv.map(r=>`<a href="#${r[1]==='b'?'b':'k'}-${r[0]}/${encodeURIComponent(r[2])}">${hl(r[3],toks)}<small>${esc(kn(r[0]))} · ${r[1]==='b'?'bunkai, paso':'movimiento'} ${esc(r[2])}</small></a>`).join('')}</div>`;
   }
   if(!h)h=`<p class="empty">Nada coincide con «${esc(raw)}». Prueba con otra palabra (por ejemplo <em>mae geri</em>, <em>zenkutsu</em>, <em>Pinan</em>).</p>`;
-  $('results').innerHTML=`<div class="pin" style="max-width:820px">${h}</div>`;
-  $('results').hidden=false; actI=-1;
+  RES().innerHTML=`<div class="pin" style="max-width:820px">${h}</div>`;
+  RES().hidden=false; actI=-1;
 }
 let actI=-1, qt=null;
-$('q').addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(runSearch,90)});
-$('q').addEventListener('focus',()=>{loadSearch();if($('q').value.trim().length>=2)runSearch()});
-$('q').addEventListener('keydown',e=>{
-  const L=[...$('results').querySelectorAll('a')];
-  if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!L.length)return;e.preventDefault();actI=(actI+(e.key==='ArrowDown'?1:-1)+L.length)%L.length;L.forEach((a,i)=>a.classList.toggle('act',i===actI));L[actI].scrollIntoView({block:'nearest'})}
-  if(e.key==='Enter'){const a=L[actI>=0?actI:0];if(a)a.click()}
-});
-$('results').addEventListener('click',e=>{const a=e.target.closest('a');if(a){PENDQ=a.dataset.q||null;closeAll();$('q').blur();$('top').classList.remove('searching')}});
+function wireSearch(el){
+  el.addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(runSearch,90)});
+  el.addEventListener('focus',()=>{loadSearch();if(el.value.trim().length>=2)runSearch()});
+  el.addEventListener('keydown',e=>{
+    const L=[...RES().querySelectorAll('a')];
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!L.length)return;e.preventDefault();actI=(actI+(e.key==='ArrowDown'?1:-1)+L.length)%L.length;L.forEach((a,i)=>a.classList.toggle('act',i===actI));L[actI].scrollIntoView({block:'nearest'})}
+    if(e.key==='Enter'){const a=L[actI>=0?actI:0];if(a)a.click()}
+  });
+}
+const onRes=e=>{const a=e.target.closest('a');if(a){PENDQ=a.dataset.q||null;closeAll();document.activeElement.blur();$('top').classList.remove('searching')}};
+$('results').addEventListener('click',onRes);
+wireSearch($('q'));
 let PENDQ=null;
 
 /* ---------- portada ---------- */
-function branchCards(b){
-  return inBranch(b).map(k=>`<a class="card" href="#k-${k.slug}">${k.thumb?`<img loading="lazy" src="${k.thumb}" alt="">`:''}<b>${esc(k.name)}</b><span>${TOMO[k.tome]} · ${k.n} mov.${k.nb?` · bunkai`:''}</span></a>`).join('');
-}
 function home(){
-  const K=IDX.katas, nsteps=K.reduce((a,k)=>a+k.n,0), nb=K.reduce((a,k)=>a+k.nb,0);
-  let html=`<div class="eyebrow">Butoku-kai · Shorinji ryu</div><h1>Katas en trazos</h1>
-  <p class="lead">El manual de karate de los Tomos II, III y IV, traducido del francés y con las fotografías convertidas en siluetas dibujadas. Cada kata se puede seguir movimiento a movimiento o reproducir de principio a fin, y casi todos incluyen su <em>bunkai</em>.</p>
-  <div class="stats"><div><b>${K.length}</b>katas</div><div><b>${nsteps.toLocaleString('es')}</b>movimientos</div><div><b>${nb.toLocaleString('es')}</b>fotos de bunkai</div><div><b>${IDX.chapters.length}</b>capítulos de teoría y técnica</div></div>
-  <div class="cardsbar">
-    <a class="tile" href="#t-posturas"><b>Kihon</b><span>Saludo, posturas, paradas, ataques y kumite básico</span></a>
-    <a class="tile" href="#t-lexico"><b>Vocabulario</b><span>Léxico japonés–castellano</span></a>
-    <a class="tile" href="#t-grados"><b>Grados</b><span>Progresión del 5.º kyu al 10.º dan</span></a>
-    <a class="tile" href="#t-que-es"><b>Teoría</b><span>Qué es el karate, dojo-kun, normas</span></a>
-  </div>`;
-  for(const b of ['shorin','tomari','naha'])html+=`<section class="branch"><h2>${BR[b].name}</h2><p class="sub">${BR[b].d}</p><div class="cards">${branchCards(b)}</div></section>`;
-  html+=`<p class="note">La agrupación de los katas por rama (Shorin, Tomari-te, Naha-te) es orientativa y sigue las tradiciones que cuenta el propio libro; varios katas se practican en más de una rama. Material de estudio privado basado en los manuales de Jean Chalamon (Butoku-kai Europe). Los dibujos se generan a partir de las fotografías originales, sin fondo y con las caras borradas; siguen siendo una obra derivada del libro.</p>`;
-  $('main').innerHTML=html;
+  $('main').innerHTML=`<div class="hero"><h1>Shorinji-Ryu</h1>
+  <div class="searchbox" role="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+  <input id="hq" type="search" placeholder="Buscar kata, técnica, término…" aria-label="Buscar" autocomplete="off" spellcheck="false" autofocus></div>
+  <div class="res" id="hres" hidden aria-live="polite"></div></div>
+  <p class="note" style="margin-left:auto;margin-right:auto">Material de estudio privado basado en los manuales de Jean Chalamon (Butoku-kai Europe). Los dibujos se generan a partir de las fotografías originales, sin fondo y con las caras borradas; siguen siendo una obra derivada del libro.</p>`;
+  wireSearch($('hq')); $('hres').addEventListener('click',onRes);
 }
 
 /* ---------- kata y bunkai ---------- */
@@ -376,7 +397,7 @@ async function kataView(slug,mode,label){
   const nb=k.bunkai.length;
   const meta=IDX.katas.find(x=>x.slug===slug)||{};
   const brn=BR[meta.branch]||{name:''};
-  const chips=[`<a href="#inicio" onclick="event.preventDefault();showMenu('${meta.branch}')">${brn.name}</a>`,`${k.steps.filter(s=>s.l!=='Fin').length} movimientos`,nb?`${nb} fotos de bunkai`:'sin bunkai'];
+  const chips=[`<a href="#inicio" onclick="event.preventDefault();showMenu('kata')">${brn.name}</a>`,`${k.steps.filter(s=>s.l!=='Fin').length} movimientos`,nb?`${nb} fotos de bunkai`:'sin bunkai'];
   $('main').innerHTML=`<div class="eyebrow">${esc(k.eyebrow)}</div><h1>${esc(k.name)}</h1>
    ${k.intro?`<div class="intro" id="intro">${k.intro}</div><button class="more" id="more" hidden>Leer más</button>`:''}
    <div class="chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
@@ -444,16 +465,18 @@ async function route(){
   const raw=location.hash.slice(1)||'inicio';
   const [h,lab0]=raw.split('/'); const lab=lab0!=null?decodeURIComponent(lab0):null;
   closeAll(); markNav();
+  document.body.classList.toggle('home',!['k-','b-','t-'].some(x=>h.startsWith(x)));
   try{
     if(h.startsWith('k-'))await kataView(h.slice(2),'kata',lab);
     else if(h.startsWith('b-'))await kataView(h.slice(2),'bunkai',lab);
     else if(h.startsWith('t-'))await chapterView(h.slice(2));
     else home();
-    document.title=(document.querySelector('h1')?.textContent||'')+(h==='inicio'?'':' · Katas en trazos');
+    document.title=h==='inicio'?'Shorinji-Ryu':(document.querySelector('h1')?.textContent||'')+(' · Shorinji-Ryu');
   }catch(err){$('main').innerHTML=`<p class="loading">No se ha podido cargar esta sección. Vuelve a intentarlo recargando la página.</p>`}
   if(lab==null)window.scrollTo({top:0});
 }
 addEventListener('hashchange',route);
+if('serviceWorker' in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 (async()=>{
   try{IDX=await getJSON('index')}catch(e){$('main').innerHTML='<p class="loading">No se ha podido cargar el índice.</p>';return}
   route();
